@@ -73,59 +73,109 @@
 		},
 	};
 
-	function calculateSingleStatsGymOffset(stat, highestNotSelfStat) {
-		const wantedStat = Math.ceil(highestNotSelfStat * 1.25);
-
-		return stat >= wantedStat ? 0 : wantedStat - stat;
-	}
-
-	function calculateTwoStatsGymOffset(statOne, statTwo, otherStatOne, otherStatTwo) {
-		const sumWantedStats = (otherStatOne + otherStatTwo) * 1.25;
-
-		if (sumWantedStats <= statOne + statTwo) {
-			return { statOneOffset: 0, statTwoOffset: 0 };
-		}
-
-		const wantedStat = sumWantedStats / 2;
+	function calculateSingleStatsGymOffset(stat, otherStatOne, otherStatTwo, otherStatThree) {
+		const highestOtherStat = Math.max(otherStatOne, otherStatTwo, otherStatThree);
+		const wantedStat = Math.max(Math.ceil(highestOtherStat * 1.25), stat);
 
 		return {
-			statOneOffset: Math.ceil(statOne >= wantedStat ? 0 : wantedStat - statOne),
-			statTwoOffset: Math.ceil(statTwo >= wantedStat ? 0 : wantedStat - statTwo),
+			statOffset: wantedStat - stat,
+			otherStatOneOffset: Math.floor(wantedStat / 1.25) - otherStatOne,
+			otherStatTwoOffset: Math.floor(wantedStat / 1.25) - otherStatTwo,
+			otherStatThreeOffset: Math.floor(wantedStat / 1.25) - otherStatThree,
 		};
 	}
 
-	function calculateClosestStats(stats, gymOneConfig, gymTwoConfig) {
+	function calculateTwoStatsGymOffset(statOne, statTwo, otherStatOne, otherStatTwo) {
+		function distributeEqually(valueOne, valueTwo, target) {
+			const halfTarget = target / 2;
+			const missingAmount = target - valueOne - valueTwo;
+
+			if (halfTarget < valueOne) {
+				return { valueOne: valueOne, valueTwo: valueTwo + missingAmount };
+			}
+
+			if (halfTarget < valueTwo) {
+				return { valueOne: valueOne + missingAmount, valueTwo: valueTwo };
+			}
+
+			return {
+				valueOne: Math.ceil(halfTarget),
+				valueTwo: Math.ceil(halfTarget),
+			};
+		}
+
+		const sumWantedStats = (otherStatOne + otherStatTwo) * 1.25;
+
+		if (sumWantedStats <= statOne + statTwo) {
+			const sumWantedOtherStats = Math.floor((statOne + statTwo) / 1.25);
+			const { valueOne, valueTwo } = distributeEqually(otherStatOne, otherStatTwo, sumWantedOtherStats);
+
+			return {
+				statOneOffset: 0,
+				statTwoOffset: 0,
+				otherStatOneOffset: Math.ceil(valueOne - otherStatOne),
+				otherStatTwoOffset: Math.ceil(valueTwo - otherStatTwo),
+			};
+		}
+
+		const { valueOne, valueTwo } = distributeEqually(statOne, statTwo, sumWantedStats);
+
+		return {
+			statOneOffset: valueOne - statOne,
+			statTwoOffset: valueTwo - statTwo,
+			otherStatOneOffset: 0,
+			otherStatTwoOffset: 0,
+		};
+	}
+
+	function calculateStatsWithSpecialGyms(stats, gymOneConfig, gymTwoConfig) {
 		function calculateSingleGymClosestStats(currStats, gymConfig) {
 			if (gymConfig.type === SPECIAL_GYM_TYPE.SINGLE_STAT) {
-				const highestNotSelfStatName = Object.entries(currStats)
-					.filter(([statName]) => statName !== gymConfig.statName)
-					.reduce((accum, curr) => (accum[1] > curr[1] ? accum : curr), ["", 0])[0];
-				const statOffset = calculateSingleStatsGymOffset(currStats[gymConfig.statName], currStats[highestNotSelfStatName]);
+				const [otherStatOneName, otherStatTwoName, otherStatThreeName] = Object.keys(currStats).filter((statName) => statName !== gymConfig.statName);
+				const { statOffset, otherStatOneOffset, otherStatTwoOffset, otherStatThreeOffset } = calculateSingleStatsGymOffset(
+					currStats[gymConfig.statName],
+					currStats[otherStatOneName],
+					currStats[otherStatTwoName],
+					currStats[otherStatThreeName]
+				);
+
+				const type = statOffset === 0 ? "noChange" : "hasChange";
 
 				return {
-					type: statOffset === 0 ? "noChange" : "hasChange",
+					type,
 					stats: {
 						...currStats,
 						[gymConfig.statName]: currStats[gymConfig.statName] + statOffset,
+					},
+					relatedStats: {
+						[otherStatOneName]: currStats[otherStatOneName] + otherStatOneOffset,
+						[otherStatTwoName]: currStats[otherStatTwoName] + otherStatTwoOffset,
+						[otherStatThreeName]: currStats[otherStatThreeName] + otherStatThreeOffset,
 					},
 				};
 			} else {
 				const [otherStatOne, otherStatTwo] = Object.keys(currStats).filter(
 					(statName) => statName !== gymConfig.statOneName && statName !== gymConfig.statTwoName
 				);
-				const { statOneOffset, statTwoOffset } = calculateTwoStatsGymOffset(
+				const { statOneOffset, statTwoOffset, otherStatOneOffset, otherStatTwoOffset } = calculateTwoStatsGymOffset(
 					currStats[gymConfig.statOneName],
 					currStats[gymConfig.statTwoName],
 					currStats[otherStatOne],
 					currStats[otherStatTwo]
 				);
 
+				const type = statOneOffset === 0 && statTwoOffset === 0 ? "noChange" : "hasChange";
+
 				return {
-					type: statOneOffset === 0 && statTwoOffset === 0 ? "noChange" : "hasChange",
+					type,
 					stats: {
 						...currStats,
 						[gymConfig.statOneName]: currStats[gymConfig.statOneName] + statOneOffset,
 						[gymConfig.statTwoName]: currStats[gymConfig.statTwoName] + statTwoOffset,
+					},
+					relatedStats: {
+						[otherStatOne]: currStats[otherStatOne] + otherStatOneOffset,
+						[otherStatTwo]: currStats[otherStatTwo] + otherStatTwoOffset,
 					},
 				};
 			}
@@ -137,7 +187,21 @@
 				const result = calculateSingleGymClosestStats(currStats, gymConfig);
 
 				if (result.type === "noChange") {
-					return currStats;
+					const maxStats = Object.entries(currStats).reduce(
+						(finalStats, [statName]) => {
+							if (statName in result.relatedStats) {
+								finalStats[statName] = result.relatedStats[statName];
+							}
+
+							return finalStats;
+						},
+						{ ...currStats }
+					);
+
+					return {
+						minStats: currStats,
+						maxStats,
+					};
 				}
 
 				return calculate(result.stats);
@@ -147,7 +211,21 @@
 			const gymTwoResult = calculateSingleGymClosestStats(gymOneResult.stats, gymTwoConfig);
 
 			if (gymOneResult.type === "noChange" && gymTwoResult.type === "noChange") {
-				return currStats;
+				const maxStats = Object.entries(currStats).reduce(
+					(finalStats, [statName]) => {
+						if (statName in gymOneResult.relatedStats || statName in gymTwoResult.relatedStats) {
+							finalStats[statName] = Math.min(gymOneResult.relatedStats[statName] ?? Infinity, gymTwoResult.relatedStats[statName] ?? Infinity);
+						}
+
+						return finalStats;
+					},
+					{ ...currStats }
+				);
+
+				return {
+					minStats: currStats,
+					maxStats,
+				};
 			}
 
 			return calculate(gymTwoResult.stats);
@@ -174,14 +252,17 @@
 			}
 		}
 
-		const closestStats = calculateClosestStats(stats, selectionOneConfig, selectionTwoConfig);
-
-		// TODO: All stats how much can train in it before lose special gyms
+		const { minStats, maxStats } = calculateStatsWithSpecialGyms(stats, selectionOneConfig, selectionTwoConfig);
 
 		return {
 			type: "success",
-			closestStats,
-			offsets: Object.entries(closestStats).reduce((accum, [statsName, stat]) => {
+			minStats,
+			maxStats,
+			minStatsOffsets: Object.entries(minStats).reduce((accum, [statsName, stat]) => {
+				accum[statsName] = stat - stats[statsName];
+				return accum;
+			}, {}),
+			maxStatsOffsets: Object.entries(maxStats).reduce((accum, [statsName, stat]) => {
 				accum[statsName] = stat - stats[statsName];
 				return accum;
 			}, {}),
@@ -292,40 +373,42 @@
 				});
 				statsInfo.appendChild(explanationLine);
 
-				function createStatText(gymName, statName) {
-					const parenText = result.offsets[statName] > 0 ? `${result.offsets[statName].toLocaleString()} missing` : `Achieved!`;
-					return `${gymName}: ${result.closestStats[statName].toLocaleString()} ${statName} (${parenText})`;
-				}
+				function createStatText(statName, isSpecial) {
+					const prefix = `${result.minStats[statName].toLocaleString()} ${statName}`;
 
-				function createGymTextLines(gymName) {
-					if (specialGymInfo[gymName].type === SPECIAL_GYM_TYPE.SINGLE_STAT) {
-						return [createStatText(gymName, specialGymInfo[gymName].statName)];
+					if (isSpecial) {
+						const parenText =
+							result.minStatsOffsets[statName] > 0
+								? `${result.minStatsOffsets[statName].toLocaleString()} missing`
+								: `Achieved! Can train ${result.maxStatsOffsets[statName].toLocaleString()} more`;
+
+						return `${prefix} (${parenText})`;
 					} else {
-						return [createStatText(gymName, specialGymInfo[gymName].statOneName), createStatText(gymName, specialGymInfo[gymName].statTwoName)];
+						return `${prefix} (Can train ${result.maxStatsOffsets[statName].toLocaleString()} more)`;
 					}
 				}
 
-				if (specialGymOne !== NONE) {
-					createGymTextLines(specialGymOne)
-						.map((lineText) =>
-							document.newElement({
-								type: "div",
-								text: lineText,
-							})
-						)
-						.forEach((elem) => statsInfo.appendChild(elem));
+				function getSpecialGymStatsNames(specialGym) {
+					return specialGym === NONE
+						? []
+						: specialGymInfo[specialGym].type === SPECIAL_GYM_TYPE.SINGLE_STAT
+						? [specialGymInfo[specialGym].statName]
+						: [specialGymInfo[specialGym].statOneName, specialGymInfo[specialGym].statTwoName];
 				}
 
-				if (specialGymTwo !== NONE && specialGymOne !== specialGymTwo) {
-					createGymTextLines(specialGymTwo)
-						.map((lineText) =>
+				const specialGymsStatsNames = [...new Set(getSpecialGymStatsNames(specialGymOne).concat(getSpecialGymStatsNames(specialGymTwo)))];
+				const nonSpecialGymsStatsNames = Object.values(BATTLE_STAT).filter((statName) => !specialGymsStatsNames.includes(statName));
+
+				[...specialGymsStatsNames, ...nonSpecialGymsStatsNames]
+					.map((statName) => createStatText(statName, specialGymsStatsNames.includes(statName)))
+					.forEach((lineText) =>
+						statsInfo.appendChild(
 							document.newElement({
 								type: "div",
 								text: lineText,
 							})
 						)
-						.forEach((elem) => statsInfo.appendChild(elem));
-				}
+					);
 			}
 		}
 
