@@ -1,0 +1,108 @@
+#uniques > main {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.tt-crimes-uniques-section-title {
+	margin-bottom: 10px;
+}
+
+.tt-crimes-uniques-section-content {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.tt-crimes-uniques-unique-item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 5px;
+	border: 1px solid #e2e2e2;
+	width: fit-content;
+	border-radius: 10px;
+	box-shadow: 0 0.075rem 0.125rem rgba(0, 0, 0, 0.5) !important;
+}
+
+.tt-crimes-uniques-star,
+.tt-crimes-uniques-star-icon,
+.tt-crimes-uniques-star-level {
+	width: 25px;
+	height: 25px;
+}
+
+.tt-crimes-uniques-star {
+	position: relative;
+}
+
+.tt-crimes-uniques-star-icon {
+	background-image: url(https://www.torn.com/images/v2/crimes/level-star/stars.svg);
+	position: absolute;
+}
+
+.tt-crimes-uniques-star-level {
+	background-image: url(https://www.torn.com/images/v2/crimes/level-star/numbers.svg);
+	position: absolute;
+}
+
+.tt-crimes-uniques-security-measure {
+	height: 34px;
+	position: relative;
+	width: 34px;
+}
+
+.tt-crimes-uniques-security-measure {
+	position: relative;
+	width: 34px;
+	height: 34px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.tt-crimes-uniques-security-measure-icon {
+	position: absolute;
+	background-image: url(/images/v2/crimes/04-shoplifting/security-measures-light.svg);
+	background-repeat: no-repeat;
+	height: 36px;
+	width: 36px;
+	background-position-x: 0;
+}
+
+.tt-crimes-uniques-security-measure-border {
+	width: 30px;
+	height: 30px;
+	border-width: 2px;
+	border-style: solid;
+	border-radius: 50%;
+}
+
+.tt-crimes-uniques-security-measure-border:not(:has(+ .tt-crimes-uniques-security-measure-off)) {
+	border-color: #aaaaaa;
+}
+
+.tt-crimes-uniques-security-measure-border:has(+ .tt-crimes-uniques-security-measure-off) {
+	border-color: #55a82f;
+}
+
+.tt-crimes-uniques-security-measure-off {
+	background-color: #55a82f;
+	height: 2px;
+	position: absolute;
+	top: calc(50% - 1px);
+	transform: rotate(-45deg);
+	transform-origin: center center;
+	width: 100%;
+	z-index: 0;
+}
+
+.tt-crimes-uniques-notification-icon {
+	font-size: 1.2rem;
+	cursor: pointer;
+	color: #d83400;
+}
+
+.tt-crimes-uniques-notification-icon.subscribed {
+	color: #678c00;
+}
