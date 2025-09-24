@@ -272,10 +272,11 @@
 	function createStatsWatcher() {
 		let onChangeCallback;
 
-		const strengthValElem = document.querySelector("#strength-val");
-		const defenseValElem = document.querySelector("#defense-val");
-		const speedValElem = document.querySelector("#speed-val");
-		const dexterityValElem = document.querySelector("#dexterity-val");
+		const createSelector = (stat) => `[class^="gymContent"] [class^="${stat}"] [class^="propertyTitle"] [class^="propertyValue"]`;
+		const strengthValElem = document.querySelector(createSelector("strength"));
+		const defenseValElem = document.querySelector(createSelector("defense"));
+		const speedValElem = document.querySelector(createSelector("speed"));
+		const dexterityValElem = document.querySelector(createSelector("dexterity"));
 
 		const observer = new MutationObserver(() => {
 			if (onChangeCallback) {
@@ -454,7 +455,7 @@
 	let specialGyms;
 
 	async function startFeature() {
-		await requireElement('[class^="gymContent"] > [class^="properties"]');
+		await requireElement('[class^="gymContent"] > [class^="properties"] [class^="propertyValue"]');
 
 		specialGyms = createSpecialistGymsBoxElement(document.querySelector("#gymroot"));
 	}
