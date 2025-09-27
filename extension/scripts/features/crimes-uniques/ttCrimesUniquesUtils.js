@@ -104,7 +104,7 @@ function createUniquesSection(crimeId, subCrime, buildUniqueItemChildrenFn, subs
 				class: "tt-crimes-uniques-section-content",
 				children: subCrime.unique_outcomes.map((uniqueOutcomeInfo) =>
 					createUniqueItem(buildUniqueItemChildrenFn(uniqueOutcomeInfo), {
-						isSubscribed: subscriptionData.subscriptionsMap[uniqueOutcomeInfo.id],
+						isSubscribed: subscriptionData.subscriptionsMap[crimeId]?.[subCrime.id]?.includes(uniqueOutcomeInfo.id),
 						subscribeChangeFn: (isSubscribed) =>
 							subscriptionData.subscribeChangeFn({ isSubscribed, crimeId, subCrimeId: subCrime.id, uniqueId: uniqueOutcomeInfo.id }),
 					})

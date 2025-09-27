@@ -156,7 +156,8 @@
 		// 	.find((crime) => crime.id === 4)
 		// 	.subcrimes.find((subCrime) => subCrime.id === 19)
 		// 	.unique_outcomes.find((uniqueOutcome) => uniqueOutcome.id === 12529).requirements;
-		const uniquesSubscriptionMap = {};
+
+		const uniquesSubscriptionMap = settings.pages.crimes2.subscribedUniquesInfo;
 
 		crimesUniquesContainer = await createCrimesUniquesContainer(crimeArea, 4, buildUniqueItemChildren, {
 			subscriptionsMap: uniquesSubscriptionMap,
@@ -178,6 +179,9 @@
 						delete uniquesSubscriptionMap[data.crimeId];
 					}
 				}
+
+				settings.pages.crimes2.subscribedUniquesInfo = uniquesSubscriptionMap;
+				ttStorage.set({ settings });
 
 				// TODO: Remove
 				console.log(uniquesSubscriptionMap);
