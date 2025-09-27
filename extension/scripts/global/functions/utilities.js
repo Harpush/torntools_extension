@@ -73,6 +73,16 @@ if (!Array.prototype.flat)
 		enumerable: false,
 	});
 
+Object.defineProperty(Object.prototype, "isEmpty", {
+	value() {
+		for (const _ in this) {
+			return false;
+		}
+
+		return true;
+	},
+});
+
 Object.defineProperty(Object.prototype, "equals", {
 	value(other) {
 		for (const property in this) {

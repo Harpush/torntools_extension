@@ -144,16 +144,43 @@
 	async function execute() {
 		const crimeArea = await requireElement(".crime-root > [class^='crimeSlider']");
 		// TODO: Save somewhere and actually add notification logic
-		const uniquesSubscriptionMap = { 12529: true };
+		// https://api.torn.com/v2/torn?selections=shoplifting,searchforcash
+		// shoplifting.sallys_sweet_shop[0].title - One camera/Checkpoint...
+		// shoplifting.sallys_sweet_shop[0].disabled - true/false
+
+		// 4/Shoplifting
+		// 19/Sally's Sweet Shop
+		// 12529
+		// Then -
+		// crimes
+		// 	.find((crime) => crime.id === 4)
+		// 	.subcrimes.find((subCrime) => subCrime.id === 19)
+		// 	.unique_outcomes.find((uniqueOutcome) => uniqueOutcome.id === 12529).requirements;
+		const uniquesSubscriptionMap = {};
 
 		crimesUniquesContainer = await createCrimesUniquesContainer(crimeArea, 4, buildUniqueItemChildren, {
 			subscriptionsMap: uniquesSubscriptionMap,
-			subscribeChangeFn: (uniqueOutcomeId, isSubscribed) => {
-				if (isSubscribed) {
-					uniquesSubscriptionMap[uniqueOutcomeId] = isSubscribed;
+			subscribeChangeFn: (data) => {
+				if (data.isSubscribed) {
+					uniquesSubscriptionMap[data.crimeId] = uniquesSubscriptionMap[data.crimeId] || {};
+					uniquesSubscriptionMap[data.crimeId][data.subCrimeId] = uniquesSubscriptionMap[data.crimeId][data.subCrimeId] || [];
+					uniquesSubscriptionMap[data.crimeId][data.subCrimeId].push(data.uniqueId);
 				} else {
-					delete uniquesSubscriptionMap[uniqueOutcomeId];
+					uniquesSubscriptionMap[data.crimeId][data.subCrimeId] = uniquesSubscriptionMap[data.crimeId][data.subCrimeId].filter(
+						(uniqueId) => uniqueId !== data.uniqueId
+					);
+
+					if (uniquesSubscriptionMap[data.crimeId][data.subCrimeId].length === 0) {
+						delete uniquesSubscriptionMap[data.crimeId][data.subCrimeId];
+					}
+
+					if (uniquesSubscriptionMap[data.crimeId].isEmpty()) {
+						delete uniquesSubscriptionMap[data.crimeId];
+					}
 				}
+
+				// TODO: Remove
+				console.log(uniquesSubscriptionMap);
 			},
 		});
 	}

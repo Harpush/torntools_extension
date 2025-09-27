@@ -203,6 +203,18 @@ const ttCache = new (class {
 		await ttStorage.set({ cache: this.cache });
 	}
 
+	async getOrAdd(options) {
+		if (this.hasValue(options.section, options.key)) {
+			return this.get(options.section, options.key);
+		}
+
+		const value = await options.fn();
+
+		this.set({ [options.key ?? options.section]: value }, options.ttl, options.section);
+
+		return value;
+	}
+
 	clear() {
 		ttStorage.set({ cache: {} }).then(() => (this.cache = {}));
 	}

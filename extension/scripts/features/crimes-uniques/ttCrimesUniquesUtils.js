@@ -90,7 +90,7 @@ function createUniqueItem(children, subscriptionData) {
 	});
 }
 
-function createUniquesSection(subCrime, buildUniqueItemChildrenFn, subscriptionData) {
+function createUniquesSection(crimeId, subCrime, buildUniqueItemChildrenFn, subscriptionData) {
 	return document.newElement({
 		type: "div",
 		children: [
@@ -105,7 +105,8 @@ function createUniquesSection(subCrime, buildUniqueItemChildrenFn, subscriptionD
 				children: subCrime.unique_outcomes.map((uniqueOutcomeInfo) =>
 					createUniqueItem(buildUniqueItemChildrenFn(uniqueOutcomeInfo), {
 						isSubscribed: subscriptionData.subscriptionsMap[uniqueOutcomeInfo.id],
-						subscribeChangeFn: (isSubscribed) => subscriptionData.subscribeChangeFn(uniqueOutcomeInfo.id, isSubscribed),
+						subscribeChangeFn: (isSubscribed) =>
+							subscriptionData.subscribeChangeFn({ isSubscribed, crimeId, subCrimeId: subCrime.id, uniqueId: uniqueOutcomeInfo.id }),
 					})
 				),
 			}),
@@ -118,14 +119,18 @@ async function createCrimesUniquesContainer(root, crimeId, buildUniqueItemChildr
 
 	showLoadingPlaceholder(content, true);
 
-	const response = await fetchData("torn_report", { section: "crimes" });
+	const response = await ttCache.getOrAdd({
+		section: "uniqueCrimes",
+		ttl: 1 * 24 * 60 * 60 * 1000,
+		fn: async () => await fetchData("torn_report", { section: "crimes" }),
+	});
 
 	showLoadingPlaceholder(content, false);
 
 	const uniquesInfo = response.crimes.find((crime) => crime.id === crimeId);
 
 	for (const subCrime of uniquesInfo.subcrimes) {
-		content.appendChild(createUniquesSection(subCrime, buildUniqueItemChildrenFn, subscriptionData));
+		content.appendChild(createUniquesSection(crimeId, subCrime, buildUniqueItemChildrenFn, subscriptionData));
 	}
 
 	function dispose() {
