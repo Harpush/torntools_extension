@@ -26,6 +26,7 @@
 				// If any new crime needs a filter, add it here and in listeners.js.
 				const CRIMES_AND_EVENTS_MAPPING = {
 					burglary: EVENT_CHANNELS.CRIMES2_BURGLARY_LOADED,
+					shoplifting: EVENT_CHANNELS.CRIMES2_SHOPLIFTING_LOADED,
 				};
 				for (const [hash, eventName] of Object.entries(CRIMES_AND_EVENTS_MAPPING)) {
 					if (window.location.hash.includes(hash)) {

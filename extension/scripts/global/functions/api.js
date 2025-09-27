@@ -23,6 +23,7 @@ const FETCH_PLATFORMS = {
 	tornw3b: "https://weav3r.dev/",
 	ffscouter: "https://ffscouter.com/",
 	laekna: "https://laekna-revive-bot.onrender.com/",
+	torn_report: "https://v2.torn.report/api/",
 };
 
 const FACTION_ACCESS = {
