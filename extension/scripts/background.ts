@@ -2030,9 +2030,12 @@ chrome.runtime.onMessage.addListener((message: BackgroundMessage, _sender, sendR
 
 			return true;
 		case "clear-cache":
-			ttCache.clear();
+			(async () => {
+				await ttCache.clear();
 
-			sendResponse({ success: true });
+				sendResponse({ success: true });
+			})();
+
 			return true;
 		default:
 			sendResponse({ success: false, message: "Unknown action." });
@@ -2106,7 +2109,7 @@ async function verifyTime() {
 	const now = Date.now();
 	if (savedTime != null && savedTime > Date.now()) {
 		console.warn("Detected a desynchronized time! Resetting timed data.");
-		ttCache.clear();
+		await ttCache.clear();
 		await Promise.all([updateUserdata(true), updateFactiondata(), updateTorndata(), updateStocks(), updateStakeouts(true), updateFactionStakeouts(true)]);
 	}
 
