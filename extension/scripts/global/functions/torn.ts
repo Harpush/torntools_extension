@@ -2330,3 +2330,12 @@ const TAX_RATES = {
 	salesTaxPercentage: 5,
 	sellAnonymouslyPercentage: 10,
 } as const;
+
+function isInfiniteUsageItem(id: number): boolean {
+	return [
+		42, // MP3 Player
+		43, // CD Player
+		65, // Television
+		104, // Game Console
+	].includes(id);
+}
