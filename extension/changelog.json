@@ -14,7 +14,8 @@
 			],
 			"changes": [
 				{ "message": "Improve popup on smaller devices.", "contributor": "DeKleineKobini" },
-				{ "message": "Hide the radiation hospital icon.", "contributor": "DeKleineKobini" }
+				{ "message": "Hide the radiation hospital icon.", "contributor": "DeKleineKobini" },
+				{ "message": "Update 'Motivator' mission hint to no longer state that timing out fails the mission.", "contributor": "DeKleineKobini" }
 			],
 			"removed": [],
 			"technical": []
