@@ -1,8 +1,13 @@
 [
 	{
-		"version": { "major": 8, "minor": 1, "build": 4 },
+		"version": { "major": 8, "minor": 1, "build": 5 },
 		"title": "Beta",
 		"date": false,
+		"logs": { "features": [], "fixes": [], "changes": [], "removed": [], "technical": [] }
+	},
+	{
+		"version": { "major": 8, "minor": 1, "build": 4 },
+		"date": "2026/04/08",
 		"logs": {
 			"features": [
 				{ "message": "Add FF Score filter to the user list filter.", "contributor": "jensim" },
@@ -21,9 +26,7 @@
 				{ "message": "Hide the radiation hospital icon.", "contributor": "DeKleineKobini" },
 				{ "message": "Update 'Motivator' mission hint to no longer state that timing out fails the mission.", "contributor": "DeKleineKobini" },
 				{ "message": "Stop the popup status timer for counting into the negative.", "contributor": "DeKleineKobini" }
-			],
-			"removed": [],
-			"technical": []
+			]
 		}
 	},
 	{
