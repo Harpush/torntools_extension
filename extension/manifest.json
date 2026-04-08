@@ -822,7 +822,7 @@
 			"run_at": "document_end"
 		},
 		{
-			"matches": ["https://www.torn.com/loader.php?sid=missions"],
+			"matches": ["https://www.torn.com/loader.php?sid=missions", "https://www.torn.com/page.php?sid=missions"],
 			"css": ["scripts/features/mission-hints/ttMissionHints.css", "scripts/features/mission-rewards/ttMissionRewards.css"],
 			"js": [
 				"scripts/content/missions/ttMissions.js",

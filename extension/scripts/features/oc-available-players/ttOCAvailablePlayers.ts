@@ -5,7 +5,7 @@
 	if (params.get("step") !== "your") return;
 
 	const feature = featureManager.registerFeature(
-		"Available Players",
+		"OC Available Players",
 		"faction",
 		() => settings.pages.faction.availablePlayers,
 		initialiseListeners,
