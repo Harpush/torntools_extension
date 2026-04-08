@@ -39,7 +39,7 @@
 	}
 
 	function onClick(event: MouseEvent) {
-		const bar = (event.target as Element).closest("a[class*='bar___']");
+		const bar = (event.target as Element).closest("[class*='bar___']");
 		if (!bar) return;
 
 		const link = LINKS[Object.keys(LINKS).filter((selector) => bar.matches(selector))[0]];
