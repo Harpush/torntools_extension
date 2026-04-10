@@ -3,7 +3,13 @@
 		"version": { "major": 8, "minor": 1, "build": 5 },
 		"title": "Beta",
 		"date": false,
-		"logs": { "features": [], "fixes": [], "changes": [], "removed": [], "technical": [] }
+		"logs": {
+			"features": [],
+			"fixes": [{ "message": "Adjust scripts to work on the new page urls.", "contributor": "DeKleineKobini" }],
+			"changes": [],
+			"removed": [],
+			"technical": []
+		}
 	},
 	{
 		"version": { "major": 8, "minor": 1, "build": 4 },
