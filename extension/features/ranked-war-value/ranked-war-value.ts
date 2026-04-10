@@ -45,7 +45,7 @@ async function showRWValue() {
 }
 
 function removeValue() {
-	console.log("DKK remove value");
+	findAllElements(`.${styles.rankedWarValue}`).forEach((v) => v.remove());
 }
 
 export default class RankedWarValueFeature extends Feature {

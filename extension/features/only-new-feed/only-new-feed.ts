@@ -22,7 +22,6 @@ function initialise() {
 		if (step !== "updates") return;
 
 		await handleFeeds();
-		console.log("DKK XHR", step);
 	});
 }
 
