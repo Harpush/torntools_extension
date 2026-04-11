@@ -50,7 +50,7 @@ export default defineConfig({
 	},
 	manifest: ({ browser }): UserManifest => {
 		const manifest: UserManifest = {
-			name: "TornTools WXT",
+			name: "TornTools",
 			description: "Several tools for Torn.",
 			// @ts-expect-error Discouraged notation, but supported.
 			author: "Gregor Kaljulaid - Mephiles[2087524]",
