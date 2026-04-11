@@ -140,10 +140,7 @@ async function startTable() {
 								elementBuilder({
 									type: "div",
 									class: "legend-icon",
-									children: [
-										isOpen ? PHFillCaretDown() : PHFillCaretRight(),
-										elementBuilder({ type: "span", text: "Filters" }),
-									],
+									children: [isOpen ? PHFillCaretDown() : PHFillCaretRight(), elementBuilder({ type: "span", text: "Filters" })],
 								}),
 								elementBuilder({
 									type: "div",
@@ -547,15 +544,13 @@ async function startTable() {
 			const fetchYata = () => {
 				return new Promise<YATATravelResponse>((resolve, reject) => {
 					fetchData<YATATravelResponse>("yata", { section: "travel/export/", relay: true })
-						.then(response => {
-							if ("stocks" in response) resolve(response)
-							else reject(new Error(`Unexpected response from YATA: ${JSON.stringify(response)}`))
+						.then((response) => {
+							if ("stocks" in response) resolve(response);
+							else reject(new Error(`Unexpected response from YATA: ${JSON.stringify(response)}`));
 						})
 						.catch(reject);
-				})
-
-
-			}
+				});
+			};
 			const fetchPrometheus = () => fetchData<PrometheusTravelResponse>("prometheus", { section: "travel", relay: true });
 
 			if (settings.external.yata && settings.external.prometheus) return Promise.any([fetchPrometheus(), fetchYata()]);
@@ -690,10 +685,7 @@ async function startTable() {
 					attributes: {
 						"aria-labelledby": "travel-table",
 					},
-					children: [
-						PHFillAirplane(),
-						mobile ? null : elementBuilder({ type: "span", text: isOpened ? "Home" : "Travel Table" }),
-					],
+					children: [PHFillAirplane(), mobile ? null : elementBuilder({ type: "span", text: isOpened ? "Home" : "Travel Table" })],
 					events: {
 						click: changeState,
 					},

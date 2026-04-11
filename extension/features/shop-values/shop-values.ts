@@ -50,7 +50,7 @@ export default class ShopValuesFeature extends Feature {
 	constructor() {
 		super("Shop Values", "shops");
 	}
-	
+
 	precondition() {
 		return getPageStatus().access;
 	}
@@ -60,7 +60,7 @@ export default class ShopValuesFeature extends Feature {
 
 		return true;
 	}
-	
+
 	isEnabled() {
 		return settings.pages.shops.values;
 	}
@@ -68,15 +68,15 @@ export default class ShopValuesFeature extends Feature {
 	initialise() {
 		initialiseListeners();
 	}
-	
+
 	async execute() {
 		await showValues();
 	}
-	
+
 	cleanup() {
 		removeValues();
 	}
-	
+
 	storageKeys() {
 		return ["settings.pages.shops.values"];
 	}

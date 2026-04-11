@@ -107,15 +107,13 @@ async function showNPCs() {
 		elementBuilder({
 			type: "div",
 			class: "npc-notifications",
-			children: [
-				settings.notifications.types.npcsGlobal ? PHFillBell() : PHFillBellSlash()
-			],
+			children: [settings.notifications.types.npcsGlobal ? PHFillBell() : PHFillBellSlash()],
 			events: {
 				click(event) {
 					if (!isElement(event.target)) return;
 
 					const newStatus = !settings.notifications.types.npcsGlobal;
-					
+
 					event.stopPropagation();
 
 					ttStorage.change({ settings: { notifications: { types: { npcsGlobal: newStatus } } } });

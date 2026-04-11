@@ -397,4 +397,3 @@ export default class JailFilterFeature extends Feature {
 		return ["settings.pages.jail.filter"];
 	}
 }
-

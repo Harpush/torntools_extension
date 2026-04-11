@@ -43,14 +43,12 @@ function addListener() {
 	});
 }
 
-function calculateValueFromResponse(response: TornInternalUseItemSuccess) : number | null {
-	if (!response.items?.itemAppear) return null
+function calculateValueFromResponse(response: TornInternalUseItemSuccess): number | null {
+	if (!response.items?.itemAppear) return null;
 
 	return response.items.itemAppear
-		.map((item) =>
-			"isMoney" in item ? convertToNumber(item.moneyGain.substring(1)) : torndata.itemsMap[item.ID].value.market_price * parseInt(item.qty)
-		)
-		.reduce((totalValue, value) => totalValue + value, 0)
+		.map((item) => ("isMoney" in item ? convertToNumber(item.moneyGain.substring(1)) : torndata.itemsMap[item.ID].value.market_price * parseInt(item.qty)))
+		.reduce((totalValue, value) => totalValue + value, 0);
 }
 
 async function showTotalValue(totalOpenedValue: number, itemID: number) {
@@ -82,7 +80,7 @@ export function calculateAndShowTotalValueInQuickItems(response: TornInternalUse
 		text: `TornTools total value: ${formatNumber(totalOpenedValue, { currency: true })}`,
 	});
 
-	responseWrap.appendChild(openedValueTextElement)
+	responseWrap.appendChild(openedValueTextElement);
 }
 
 export function shouldDisplayOpenedValue(itemID: number) {

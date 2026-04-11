@@ -48,8 +48,8 @@ async function addCSVContainer() {
 				});
 
 				csv.download();
-			}
-		}
+			},
+		},
 	});
 	options.appendChild(exportButton);
 }

@@ -79,7 +79,7 @@ export async function fetchData<R = any>(l: FetchLocation, partialOptions: Parti
 				.then((response) => resolve(response))
 				.catch((error) => {
 					if (error.name === "NonError") {
-						reject(JSON.parse(error.message))
+						reject(JSON.parse(error.message));
 					} else {
 						reject(new Error(error));
 					}

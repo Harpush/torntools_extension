@@ -37,9 +37,9 @@ export default defineConfig({
 		},
 		css: {
 			modules: {
-				localsConvention: "camelCaseOnly"
-			}
-		}
+				localsConvention: "camelCaseOnly",
+			},
+		},
 	}),
 	hooks: {
 		"build:manifestGenerated": (wxt, manifest) => {
