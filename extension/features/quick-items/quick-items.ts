@@ -1,19 +1,19 @@
 import "./quick-items.css";
 import { Feature } from "@/features/feature-manager";
-import { getItemEnergy, getPageStatus, getUserEnergy } from "@/utils/common/functions/torn";
+import { calculateAndShowTotalValueInQuickItems, shouldDisplayOpenedValue } from "@/features/opened-supply-pack-value/opened-supply-pack-value";
+import { isUseItem } from "@/pages/item-page";
 import { quick, settings, torndata } from "@/utils/common/data/database";
+import type { QuickItem } from "@/utils/common/data/default-database";
+import { ttStorage } from "@/utils/common/data/storage";
 import { fetchData, hasAPIData } from "@/utils/common/functions/api";
 import { createContainer, findContainer, removeContainer } from "@/utils/common/functions/containers";
-import { CUSTOM_LISTENERS, EVENT_CHANNELS, triggerCustomListener } from "@/utils/common/functions/listeners";
-import { formatTime } from "@/utils/common/functions/formatting";
 import { elementBuilder, findAllElements, findParent, isElement, mobile, tablet } from "@/utils/common/functions/dom";
+import { formatTime } from "@/utils/common/functions/formatting";
+import { CUSTOM_LISTENERS, EVENT_CHANNELS, triggerCustomListener } from "@/utils/common/functions/listeners";
 import { requireContent, requireItemsLoaded } from "@/utils/common/functions/requires";
-import { QuickItem } from "@/utils/common/data/default-database";
+import { getItemEnergy, getPageStatus, getUserEnergy } from "@/utils/common/functions/torn";
 import { getTornItemType, TORN_ITEMS } from "@/utils/common/functions/torn-items";
-import { ttStorage } from "@/utils/common/data/storage";
 import { PHPlus, PHX } from "@/utils/common/icons/phosphor-icons";
-import { isUseItem } from "@/pages/item-page";
-import { calculateAndShowTotalValueInQuickItems, shouldDisplayOpenedValue } from "@/features/opened-supply-pack-value/opened-supply-pack-value";
 
 let movingElement: Element | undefined;
 let isEditing = false;
@@ -94,7 +94,7 @@ async function loadQuickItems() {
 					for (const category of findAllElements("#categoriesItem:not(.no-items)")) {
 						if (
 							!["Temporary", "Medical", "Drug", "Energy Drink", "Alcohol", "Candy", "Booster", "Other", "Supply Pack"].includes(
-								category.dataset.type
+								category.dataset.type,
 							)
 						)
 							continue;
@@ -113,7 +113,7 @@ async function loadQuickItems() {
 					attachEditListeners(enabled);
 				},
 			},
-		})
+		}),
 	);
 
 	for (const quickItem of quick.items) {
@@ -175,7 +175,7 @@ function addQuickItem(data: QuickItem & { equipPosition?: false | number }, temp
 
 				const body = new URLSearchParams();
 				Object.entries(equipItem ? { step: "actionForm", confirm: 1, action: "equip", id: xid } : { step: "useItem", id: id, itemID: id }).forEach(
-					([key, value]) => body.set(key, value.toString())
+					([key, value]) => body.set(key, value.toString()),
 				);
 
 				fetchData("torn_direct", { action: "item.php", method: "POST", body }).then(async (result) => {
@@ -195,9 +195,9 @@ function addQuickItem(data: QuickItem & { equipPosition?: false | number }, temp
 												link.attr
 													.split(" ")
 													.filter((x) => !!x)
-													.map((x) => x.split("="))
+													.map((x) => x.split("=")),
 											),
-										})
+										}),
 									);
 								}
 							}
@@ -221,7 +221,7 @@ function addQuickItem(data: QuickItem & { equipPosition?: false | number }, temp
 										],
 									}),
 								],
-							})
+							}),
 						);
 
 						if (result.success) {
@@ -267,12 +267,12 @@ function addQuickItem(data: QuickItem & { equipPosition?: false | number }, temp
 
 						if (result.includes(" equipped ")) {
 							findAllElements(`.item.equipped[data-equip-position="${equipPosition}"]`, innerContent).forEach((x) =>
-								x.classList.remove("equipped")
+								x.classList.remove("equipped"),
 							);
 							itemWrap.classList.add("equipped");
 						} else if (result.includes(" unequipped "))
 							findAllElements(`.item.equipped[data-equip-position="${equipPosition}"]`, innerContent).forEach((x) =>
-								x.classList.remove("equipped")
+								x.classList.remove("equipped"),
 							);
 					}
 				});
@@ -449,7 +449,7 @@ function allowQuickItem(id: number, category: string) {
 }
 
 function isEquipable(_id: number, category: string) {
-	return ["Temporary"].includes(category);
+	return ["Weapon"].includes(category);
 }
 
 function getEquipPosition(_id: number, category: string) {
