@@ -21,7 +21,8 @@
 				{ "message": "Fix Stats Estimates not showing on the HOF page.", "contributor": "DeKleineKobini" },
 				{ "message": "Fix popup icons scrolling being available unnecessarily.", "contributor": "DeKleineKobini" },
 				{ "message": "Highlight blood bags in the faction armory again.", "contributor": "DeKleineKobini" },
-				{ "message": "Hide completed education courses again.", "contributor": "DeKleineKobini" }
+				{ "message": "Hide completed education courses again.", "contributor": "DeKleineKobini" },
+				{ "message": "Fix stats estimate styling on the enemies page.", "contributor": "DeKleineKobini" }
 			],
 			"changes": [
 				{ "message": "Replace all FontAwesome icons with others, mainly from Phosphor Icons.", "contributor": "DeKleineKobini" },
