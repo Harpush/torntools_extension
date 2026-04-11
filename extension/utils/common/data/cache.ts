@@ -99,8 +99,13 @@ class TornToolsCache {
 		else return { value, timeout };
 	}
 
-	clear() {
-		ttStorage.set({ cache: {} }).then(() => (this.cache = {}));
+	async clear(section?: string) {
+		if (section) {
+			delete this.cache[section];
+			await ttStorage.set({ cache: this.cache });
+		} else {
+			ttStorage.set({ cache: {} }).then(() => (this.cache = {}));
+		}
 	}
 
 	async refresh() {
