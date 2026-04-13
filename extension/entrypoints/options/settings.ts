@@ -249,7 +249,7 @@ async function setupPreferences(requireCleanup: boolean = false) {
 	if (requireCleanup) cleanupPreferences();
 	searchPreferences();
 
-	const _preferences = document.querySelector("#preferences");
+	const _preferences = document.querySelector<HTMLElement>("#preferences");
 	_preferences.addEventListener("click", (event) => {
 		if (!(event.target as Element).closest("button.remove-icon-wrap, #hide-icons, #hide-casino-games, #hide-stocks, #hide-attack-options")) return;
 
@@ -271,7 +271,7 @@ async function setupPreferences(requireCleanup: boolean = false) {
 		addSaveDialog();
 	});
 
-	const reviveProviderSelectElement = _preferences.querySelector("#global-reviveProvider");
+	const reviveProviderSelectElement = _preferences.querySelector<HTMLElement>("#global-reviveProvider");
 	for (const provider of REVIVE_PROVIDERS) {
 		reviveProviderSelectElement.appendChild(
 			elementBuilder({
@@ -343,7 +343,7 @@ async function setupPreferences(requireCleanup: boolean = false) {
 			.catch(() => {});
 	});
 
-	_preferences.querySelector("#notification_type-global").addEventListener("click", (event) => {
+	_preferences.querySelector<HTMLElement>("#notification_type-global").addEventListener("click", (event) => {
 		const disable = !(event.target as HTMLInputElement).checked;
 
 		for (const notificationType in settings.notifications.types) {
@@ -353,7 +353,7 @@ async function setupPreferences(requireCleanup: boolean = false) {
 			else _preferences.querySelector(`#notification_type-${notificationType}`).removeAttribute("disabled");
 		}
 	});
-	_preferences.querySelector("#notification-sound").addEventListener("change", (event) => {
+	_preferences.querySelector<HTMLElement>("#notification-sound").addEventListener("change", (event) => {
 		const value = (event.target as HTMLInputElement).value;
 
 		if (value === "custom") {
@@ -382,7 +382,7 @@ async function setupPreferences(requireCleanup: boolean = false) {
 	_preferences.querySelector("#notification-sound-stop").addEventListener("click", () => {
 		BACKGROUND_SERVICE.stopNotificationSound();
 	});
-	_preferences.querySelector("#notification-sound-upload").addEventListener("change", (event) => {
+	_preferences.querySelector<HTMLElement>("#notification-sound-upload").addEventListener("change", (event) => {
 		const target = event.target as HTMLInputElement;
 		if (!target.files.length) return;
 
@@ -410,7 +410,7 @@ async function setupPreferences(requireCleanup: boolean = false) {
 	});
 	_preferences.querySelector("#customLinks .input select.preset").innerHTML = getCustomLinkOptions();
 	_preferences.querySelector<HTMLSelectElement>("#customLinks .input select.preset").value = "custom";
-	_preferences.querySelector("#customLinks .input select.preset").addEventListener("change", (event) => {
+	_preferences.querySelector<HTMLElement>("#customLinks .input select.preset").addEventListener("change", (event) => {
 		const target = event.target as HTMLSelectElement;
 		const hrefInput = _preferences.querySelector<HTMLInputElement>("#customLinks .input .href");
 		const nameInput = _preferences.querySelector<HTMLInputElement>("#customLinks .input .name");
@@ -517,7 +517,7 @@ async function setupPreferences(requireCleanup: boolean = false) {
 		casinoGame.addEventListener("click", (event) => (event.target as Element).classList.toggle("disabled"));
 	}
 
-	const hideStocksParent = _preferences.querySelector("#hide-stocks");
+	const hideStocksParent = _preferences.querySelector<HTMLElement>("#hide-stocks");
 	if (hasAPIData() && stockdata) {
 		for (const stock in stockdata) {
 			if (typeof stockdata[stock] === "number") continue;
@@ -577,14 +577,14 @@ async function setupPreferences(requireCleanup: boolean = false) {
 		optionNode.addEventListener("click", (event) => (event.target as Element).classList.toggle("disabled"));
 	});
 
-	_preferences.querySelector("#external-tornstats").addEventListener("click", (event) => requestOrigin(FETCH_PLATFORMS.tornstats, event));
-	_preferences.querySelector("#external-yata").addEventListener("click", (event) => requestOrigin(FETCH_PLATFORMS.yata, event));
-	_preferences.querySelector("#external-prometheus").addEventListener("click", (event) => requestOrigin(FETCH_PLATFORMS.prometheus, event));
-	_preferences.querySelector("#external-lzpt").addEventListener("click", (event) => requestOrigin(FETCH_PLATFORMS.lzpt, event));
-	_preferences.querySelector("#external-tornw3b").addEventListener("click", (event) => requestOrigin(FETCH_PLATFORMS.tornw3b, event));
-	_preferences.querySelector("#external-ffScouter").addEventListener("click", (event) => requestOrigin(FETCH_PLATFORMS.ffscouter, event));
+	_preferences.querySelector<HTMLElement>("#external-tornstats").addEventListener("click", (event) => requestOrigin(FETCH_PLATFORMS.tornstats, event));
+	_preferences.querySelector<HTMLElement>("#external-yata").addEventListener("click", (event) => requestOrigin(FETCH_PLATFORMS.yata, event));
+	_preferences.querySelector<HTMLElement>("#external-prometheus").addEventListener("click", (event) => requestOrigin(FETCH_PLATFORMS.prometheus, event));
+	_preferences.querySelector<HTMLElement>("#external-lzpt").addEventListener("click", (event) => requestOrigin(FETCH_PLATFORMS.lzpt, event));
+	_preferences.querySelector<HTMLElement>("#external-tornw3b").addEventListener("click", (event) => requestOrigin(FETCH_PLATFORMS.tornw3b, event));
+	_preferences.querySelector<HTMLElement>("#external-ffScouter").addEventListener("click", (event) => requestOrigin(FETCH_PLATFORMS.ffscouter, event));
 
-	_preferences.querySelector("#global-reviveProvider").addEventListener("change", (event) => {
+	_preferences.querySelector<HTMLElement>("#global-reviveProvider").addEventListener("change", (event) => {
 		const provider = (event.target as HTMLInputElement).value;
 		if (!provider) return;
 
@@ -1266,7 +1266,7 @@ async function setupPreferences(requireCleanup: boolean = false) {
 			if (event.keyCode === 13) search();
 		});
 
-		const searchList = searchOverlay.querySelector("#tt-search-list");
+		const searchList = searchOverlay.querySelector<HTMLElement>("#tt-search-list");
 
 		async function search() {
 			const searchFor = searchOverlayInput.value.toLowerCase().trim();
@@ -1775,7 +1775,7 @@ async function setupExport() {
 			.then(() => document.querySelector<HTMLElement>("#import-local-file-origin").click())
 			.catch(() => {});
 	});
-	exportSection.querySelector("#import-local-file-origin").addEventListener("change", (event) => {
+	exportSection.querySelector<HTMLElement>("#import-local-file-origin").addEventListener("change", (event) => {
 		const reader = new FileReader();
 		reader.addEventListener("load", async (event) => {
 			const result = event.target.result;
