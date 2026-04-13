@@ -31,7 +31,8 @@
 				{ "message": "Resolve error when clicking the settings link in the popup.", "contributor": "DeKleineKobini" },
 				{ "message": "Fix 'Travel Table' for first time travelers.", "contributor": "DeKleineKobini" },
 				{ "message": "Avoid sending out duplicate notification on startup.", "contributor": "DeKleineKobini" },
-				{ "message": "Avoid doing too many api calls on startup.", "contributor": "DeKleineKobini" }
+				{ "message": "Avoid doing too many api calls on startup.", "contributor": "DeKleineKobini" },
+				{ "message": "Fix 'Abroad People Filter' and 'Userlist Filter' not working if FFScouter is disabled.", "contributor": "DeKleineKobini" }
 			],
 			"changes": [
 				{ "message": "Replace all FontAwesome icons with others, mainly from Phosphor Icons.", "contributor": "DeKleineKobini" },
