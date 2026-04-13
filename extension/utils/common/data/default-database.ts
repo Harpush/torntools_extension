@@ -859,7 +859,7 @@ export interface StoredNpc {
 	order?: number;
 }
 
-type StoredUserdata = FetchedUserdata & {
+export type StoredUserdata = FetchedUserdata & {
 	date: number;
 	dateBasic: number;
 	userCrime?: number;
