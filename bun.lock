@@ -11,7 +11,7 @@
         "chart.js": "^4.5.1",
         "sortablejs": "^1.15.7",
         "source-map": "^0.7.6",
-        "tornapi-typescript": "^5.5.4",
+        "tornapi-typescript": "^5.6.0",
       },
       "devDependencies": {
         "@biomejs/biome": "^2.4.11",
@@ -791,7 +791,7 @@
 
     "tmp": ["tmp@0.2.5", "", {}, "sha512-voyz6MApa1rQGUxT3E+BK7/ROe8itEx7vD8/HEvt4xwXucvQ5G5oeEiHkmHZJuBO21RpOf+YYm9MOivj709jow=="],
 
-    "tornapi-typescript": ["tornapi-typescript@5.5.4", "", {}, "sha512-gdtIneJsI4mmDMKssU87nvK78ikETh8Q1NbMaQUfosnyh3ioc7i+7jGtbF+IjEJLo1jSb4j87mJUJ5AUW2zF3g=="],
+    "tornapi-typescript": ["tornapi-typescript@5.6.0", "", {}, "sha512-v3gZcYM5Yguwb5DCBvd0AGGovrc1R60XfJGcbNxoFdEi9UxwCQ+72hSZY1awMtNmcd+DE7hrZy7RILXsKySasQ=="],
 
     "tree-kill": ["tree-kill@1.2.2", "", { "bin": { "tree-kill": "cli.js" } }, "sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A=="],
 
