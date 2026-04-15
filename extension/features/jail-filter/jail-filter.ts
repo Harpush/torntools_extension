@@ -194,7 +194,11 @@ async function filtering(pageChange: boolean = false) {
 	// Actual Filtering
 	if (!localFilters.enabled.isEnabled()) {
 		findAllElements(".users-list > li.tt-hidden").forEach((row) => row.classList.remove("tt-hidden"));
-		localFilters["Statistics"].updateStatistics(findAllElements(".users-list > li:not(.tt-hidden)").length, findAllElements(".users-list > li").length, content);
+		localFilters["Statistics"].updateStatistics(
+			findAllElements(".users-list > li:not(.tt-hidden)").length,
+			findAllElements(".users-list > li").length,
+			content,
+		);
 		return;
 	}
 
