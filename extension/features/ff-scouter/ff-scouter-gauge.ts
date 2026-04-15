@@ -28,7 +28,9 @@ async function initialise() {
 	new MutationObserver(() => {
 		if (!FEATURE_MANAGER.isEnabled(FFScouterGaugeFeature)) return;
 
-		setTimeout(triggerGauge);
+		// For performance reasons it's important NOT shorten this to `setTimeout(triggerGauge)`.
+		// I have no idea why it impacts the performance that way, but it does.
+		setTimeout(() => triggerGauge());
 	}).observe(document, { attributes: false, childList: true, characterData: false, subtree: true });
 }
 
@@ -240,7 +242,9 @@ export default class FFScouterGaugeFeature extends Feature {
 	}
 
 	execute() {
-		setTimeout(triggerGauge);
+		// For performance reasons it's important NOT shorten this to `setTimeout(triggerGauge)`.
+		// I have no idea why it impacts the performance that way, but it does.
+		setTimeout(() => triggerGauge());
 	}
 
 	cleanup() {
