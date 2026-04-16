@@ -603,6 +603,11 @@ async function setupPreferences(requireCleanup: boolean = false) {
 		});
 	});
 
+	configureVoices();
+	if ("onvoiceschanged" in window.speechSynthesis) {
+		window.speechSynthesis.onvoiceschanged = configureVoices;
+	}
+
 	fillSettings();
 	requestPermissions();
 	storageListeners.settings.push(updateSettings);
@@ -648,6 +653,7 @@ async function setupPreferences(requireCleanup: boolean = false) {
 		}
 
 		_preferences.querySelector<HTMLInputElement>("#csvDelimiter").value = settings.csvDelimiter;
+		_preferences.querySelector<HTMLInputElement>("#tts-voice").value = settings.notifications.ttsVoice;
 
 		for (const type of ["pages", "scripts"]) {
 			for (const page in settings[type]) {
@@ -1196,6 +1202,7 @@ async function setupPreferences(requireCleanup: boolean = false) {
 			.filter(({ level, minutes }) => level !== "" || minutes !== "");
 
 		settings.notifications.tts = _preferences.querySelector<HTMLInputElement>("#notification-tts").checked;
+		settings.notifications.ttsVoice = _preferences.querySelector<HTMLInputElement>("#tts-voice").value;
 		settings.notifications.link = _preferences.querySelector<HTMLInputElement>("#notification-link").checked;
 		settings.notifications.requireInteraction = _preferences.querySelector<HTMLInputElement>("#notification-requireInteraction").checked;
 		settings.notifications.volume = parseInt(_preferences.querySelector<HTMLInputElement>("#notification-volume").value);
@@ -1427,6 +1434,34 @@ async function setupPreferences(requireCleanup: boolean = false) {
 				window.open(location.href, "_blank");
 			})
 			.catch(() => {});
+	}
+
+	function configureVoices() {
+		document.getElementById("tts-voice")?.remove();
+
+		const allVoices: { id: string; name: string; language: string }[] = [
+			{ id: "default", name: "System Default", language: "" },
+			...window.speechSynthesis.getVoices().map((voice) => ({
+				id: `${voice.name} (${voice.lang})`,
+				name: voice.name,
+				language: voice.lang,
+			})),
+		];
+
+		_preferences.querySelector("#notification-tts").parentElement.appendChild(
+			elementBuilder({
+				type: "select",
+				id: "tts-voice",
+				children: allVoices.map(({ id, name, language }) =>
+					elementBuilder({
+						type: "option",
+						text: language ? `${name} (${language})` : name,
+						attributes: { value: id },
+					}),
+				),
+			}),
+		);
+		_preferences.querySelector<HTMLInputElement>("#tts-voice").value = settings.notifications.ttsVoice;
 	}
 }
 
