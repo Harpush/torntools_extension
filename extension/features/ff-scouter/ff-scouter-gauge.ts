@@ -10,8 +10,9 @@ import { settings } from "@/utils/common/data/database";
 import { displayAlert } from "@/utils/common/functions/alerts";
 import { hasAPIData } from "@/utils/common/functions/api";
 import { elementBuilder, findAllElements, isElement } from "@/utils/common/functions/dom";
-import { EVENT_CHANNELS, triggerCustomListener } from "@/utils/common/functions/listeners";
+import { addCustomListener, EVENT_CHANNELS, triggerCustomListener } from "@/utils/common/functions/listeners";
 import { getPage } from "@/utils/common/functions/torn";
+import { isTabFocused } from "@/utils/common/functions/utilities";
 
 let SCOUTER_SERVICE: ScouterService;
 let BLUE_ARROW: string, GREEN_ARROW: string, RED_ARROW: string;
@@ -36,6 +37,11 @@ function initialise() {
 
 		safeTriggerGauge();
 	}).observe(document.body, { childList: true, subtree: true });
+	addCustomListener(EVENT_CHANNELS.WINDOW__FOCUS, () => {
+		if (!FEATURE_MANAGER.isEnabled(FFScouterGaugeFeature)) return;
+
+		safeTriggerGauge();
+	});
 }
 
 let rafId: number | null = null;
@@ -43,6 +49,8 @@ let lastTriggerTime = 0;
 const TRIGGER_THROTTLE = 200;
 
 function safeTriggerGauge() {
+	if (!isTabFocused()) return;
+
 	const now = Date.now();
 	if (now - lastTriggerTime < TRIGGER_THROTTLE || rafId) return;
 
