@@ -9,14 +9,15 @@ import { type ScouterService, scouterService } from "@/features/ff-scouter/ff-sc
 import { settings } from "@/utils/common/data/database";
 import { displayAlert } from "@/utils/common/functions/alerts";
 import { hasAPIData } from "@/utils/common/functions/api";
-import { elementBuilder, findAllElements } from "@/utils/common/functions/dom";
+import { elementBuilder, findAllElements, isElement } from "@/utils/common/functions/dom";
 import { EVENT_CHANNELS, triggerCustomListener } from "@/utils/common/functions/listeners";
 import { getPage } from "@/utils/common/functions/torn";
 
 let SCOUTER_SERVICE: ScouterService;
 let BLUE_ARROW: string, GREEN_ARROW: string, RED_ARROW: string;
 
-let rafId: number | null = null;
+let pageSelector: string | null;
+
 let scoutLock = false;
 let lockFailure = false;
 
@@ -24,28 +25,32 @@ function initialise() {
 	new MutationObserver((mutations) => {
 		if (!FEATURE_MANAGER.isEnabled(FFScouterGaugeFeature)) return;
 
-		if (!mutations.some((mutation) => mutation.addedNodes.length > 0)) return;
+		const hasRelevantNodes = mutations.some(
+			(mutation) =>
+				mutation.addedNodes.length > 0 &&
+				Array.from(mutation.addedNodes)
+					.filter(isElement)
+					.some((element) => element.matches(pageSelector) || element.querySelector(pageSelector)),
+		);
+		if (!hasRelevantNodes) return;
 
 		safeTriggerGauge();
 	}).observe(document.body, { childList: true, subtree: true });
 }
 
-let lastProcessTime = 0;
-const PROCESS_THROTTLE = 100;
+let rafId: number | null = null;
+let lastTriggerTime = 0;
+const TRIGGER_THROTTLE = 200;
 
 function safeTriggerGauge() {
-	if (rafId) return;
-
 	const now = Date.now();
-	if (now - lastProcessTime < PROCESS_THROTTLE) {
-		rafId = requestAnimationFrame(() => {
-			rafId = null;
-			triggerGauge();
-		});
-	} else {
+	if (now - lastTriggerTime < TRIGGER_THROTTLE || rafId) return;
+
+	rafId = requestAnimationFrame(() => {
+		rafId = null;
 		triggerGauge();
-	}
-	lastProcessTime = now;
+	});
+	lastTriggerTime = now;
 }
 
 const SELECTORS = new Map<string, string>([
@@ -78,6 +83,10 @@ function triggerGauge() {
 		}
 
 		elements = findAllElements<HTMLAnchorElement>(selector);
+		if (!elements.length) {
+			scoutLock = false;
+			return;
+		}
 	}
 
 	applyGauge(elements)
@@ -103,52 +112,85 @@ interface GaugeElements {
 }
 
 function applyGauge(e: HTMLAnchorElement[]) {
-	const elements = e
-		.filter((element) => !element.classList.contains("tt-ff-scouter-indicator"))
-		.map<GaugeElements>((element) => ({ element, id: extractPlayerId(element) }))
-		.filter(({ id }) => id);
-	if (elements.length === 0) return Promise.resolve();
-
 	if (lockFailure) return Promise.reject(null);
 
+	const elements: Array<GaugeElements> = e
+		.filter((el) => !el.classList.contains("tt-ff-scouter-indicator"))
+		.map((element) => ({ element, id: extractPlayerId(element) }))
+		.filter(({ id }) => !!id);
+	if (!elements.length) return Promise.resolve();
+
+	return processBatches(elements);
+}
+
+const BATCH_SIZE = 10;
+const BATCH_DELAY = 10;
+
+function processBatches(elementsWithIds: GaugeElements[]): Promise<void> {
 	return new Promise<void>((resolve, reject) => {
-		SCOUTER_SERVICE.scoutGroup(elements.map(({ id }) => id))
-			.then((scouts) => {
-				for (const { element, id } of elements) {
-					element.classList.add("tt-ff-scouter-indicator");
+		let currentBatch = 0;
+		const totalBatches = Math.ceil(elementsWithIds.length / BATCH_SIZE);
 
-					if (!element.classList.contains("indicator-lines")) {
-						element.classList.remove("small", "big");
-						element.classList.add("indicator-lines");
-						element.style.setProperty("--arrow-width", "20px");
-					}
-
-					const ff = id in scouts && "fair_fight" in scouts[id] ? scouts[id].fair_fight : null;
-					if (ff) {
-						const percent = convertFFToPercentage(ff);
-						element.style.setProperty("--band-percent", percent.toString());
-
-						element.querySelector(".tt-ff-scouter-arrow")?.remove();
-						const arrow = percent < 33 ? BLUE_ARROW : percent < 66 ? GREEN_ARROW : RED_ARROW;
-
-						element.appendChild(
-							elementBuilder({
-								type: "img",
-								class: "tt-ff-scouter-arrow",
-								attributes: { src: arrow },
-							}),
-						);
-						element.dataset.ffScout = ff.toString();
-					}
-				}
-
+		const processNextBatch = () => {
+			if (currentBatch >= totalBatches) {
+				triggerCustomListener(EVENT_CHANNELS.FF_SCOUTER_GAUGE);
 				resolve();
-			})
-			.then(() => triggerCustomListener(EVENT_CHANNELS.FF_SCOUTER_GAUGE))
-			.catch((reason) => {
-				lockFailure = true;
-				reject(reason);
-			});
+				return;
+			}
+
+			const startIdx = currentBatch * BATCH_SIZE;
+			const endIdx = Math.min(startIdx + BATCH_SIZE, elementsWithIds.length);
+			const batch = elementsWithIds.slice(startIdx, endIdx);
+
+			SCOUTER_SERVICE.scoutGroup(batch.map(({ id }) => id))
+				.then((scouts) => {
+					const updates: Array<() => void> = [];
+
+					for (const { element, id } of batch) {
+						element.classList.add("tt-ff-scouter-indicator");
+
+						if (!element.classList.contains("indicator-lines")) {
+							updates.push(() => {
+								element.classList.remove("small", "big");
+								element.classList.add("indicator-lines");
+								element.style.setProperty("--arrow-width", "20px");
+							});
+						}
+
+						const ff = id in scouts && "fair_fight" in scouts[id] ? scouts[id].fair_fight : null;
+						if (ff) {
+							const percent = convertFFToPercentage(ff);
+							const arrow = percent < 33 ? BLUE_ARROW : percent < 66 ? GREEN_ARROW : RED_ARROW;
+
+							updates.push(() => {
+								element.style.setProperty("--band-percent", percent.toString());
+								element.querySelector(".tt-ff-scouter-arrow")?.remove();
+								element.appendChild(
+									elementBuilder({
+										type: "img",
+										class: "tt-ff-scouter-arrow",
+										attributes: { src: arrow },
+									}),
+								);
+								element.dataset.ffScout = ff.toString();
+							});
+						}
+					}
+
+					requestAnimationFrame(() => {
+						updates.forEach((update) => update());
+						currentBatch++;
+
+						setTimeout(processNextBatch, BATCH_DELAY);
+					});
+				})
+				.catch((reason) => {
+					lockFailure = true;
+					reject(reason);
+				});
+		};
+
+		processNextBatch();
 	});
 }
 
@@ -175,13 +217,34 @@ function extractPlayerId(element: HTMLAnchorElement): string | null {
 
 function convertFFToPercentage(ff: number) {
 	ff = Math.min(ff, 8);
-	if (ff < 2) return (ff - 1) * 33;
-	if (ff < 4) return (ff - 2) * 16.5 + 33;
-	return (ff - 4) * 12.5 + 66;
+	// There are 3 key areas, low, medium, high
+	// Low is 1-2
+	// Medium is 2-4
+	// High is 4+
+	// If we clip high at 8 then the math becomes easy
+	// The percent is 0-33% 33-66% 66%-100%
+	const lowPoint = 2;
+	const highPoint = 4;
+	const lowMidPercent = 33;
+	const midHighPercent = 66;
+
+	let percent: number;
+	if (ff < lowPoint) {
+		percent = ((ff - 1) / (lowPoint - 1)) * lowMidPercent;
+	} else if (ff < highPoint) {
+		percent = ((ff - lowPoint) / (highPoint - lowPoint)) * (midHighPercent - lowMidPercent) + lowMidPercent;
+	} else {
+		percent = ((ff - highPoint) / (8 - highPoint)) * (100 - midHighPercent) + midHighPercent;
+	}
+
+	return percent;
 }
 
 function removeGauge() {
-	if (rafId) cancelAnimationFrame(rafId);
+	if (rafId) {
+		cancelAnimationFrame(rafId);
+		rafId = null;
+	}
 	findAllElements(".tt-ff-scouter-indicator").forEach((element) => element.classList.remove("tt-ff-scouter-indicator"));
 	findAllElements(".tt-ff-scouter-arrow").forEach((element) => element.remove());
 }
@@ -207,6 +270,7 @@ export default class FFScouterGaugeFeature extends Feature {
 		BLUE_ARROW = browser.runtime.getURL("/images/svg-icons/blue-arrow.svg");
 		GREEN_ARROW = browser.runtime.getURL("/images/svg-icons/green-arrow.svg");
 		RED_ARROW = browser.runtime.getURL("/images/svg-icons/red-arrow.svg");
+		pageSelector = SELECTORS.get(getPage());
 		initialise();
 	}
 

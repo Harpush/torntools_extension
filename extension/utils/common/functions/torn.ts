@@ -1847,19 +1847,20 @@ export function updateReactInput(input: HTMLInputElement | HTMLTextAreaElement, 
 	const valueString = value.toString();
 
 	switch (options.version) {
-		// case "complex-please-never-be-needed":
-		// 	const lastValue = input.value;
-		// 	input.value = value;
-		// 	const event = new Event("input", { bubbles: true, simulated: true });
-		// 	// Probably needs to be moved to a script tag.
-		// 	const tracker = input._valueTracker;
-		// 	// Another try can be made by setting the value tracker to null.
-		// 	if (tracker) {
-		// 		tracker.setValue(lastValue);
-		// 	}
-		// 	console.log("TT DEBUG - Updating react input.", { input, value, lastValue, tracker });
-		// 	input.dispatchEvent(event);
-		// 	break;
+		case "complex-please-never-be-needed":
+			// 	const lastValue = input.value;
+			// 	input.value = value;
+			// 	const event = new Event("input", { bubbles: true, simulated: true });
+			// 	// Probably needs to be moved to a script tag.
+			// 	const tracker = input._valueTracker;
+			// 	// Another try can be made by setting the value tracker to null.
+			// 	if (tracker) {
+			// 		tracker.setValue(lastValue);
+			// 	}
+			// 	console.log("TT DEBUG - Updating react input.", { input, value, lastValue, tracker });
+			// 	input.dispatchEvent(event);
+			// 	break;
+			throw new Error(`Provided version is not supported at this moment: '${options.version}}'.`);
 		case REACT_UPDATE_VERSIONS.NATIVE_SETTER: {
 			const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
 			nativeSetter.call(input, valueString);
@@ -1875,6 +1876,26 @@ export function updateReactInput(input: HTMLInputElement | HTMLTextAreaElement, 
 		default:
 			input.value = valueString;
 			input.dispatchEvent(new Event("input", { bubbles: true }));
+			break;
+	}
+}
+
+export function updateReactCheckbox(checkbox: HTMLInputElement, checked: boolean, partialOptions: Partial<ReactInputOptions> = {}) {
+	const options: ReactInputOptions = {
+		version: REACT_UPDATE_VERSIONS.DEFAULT,
+		...partialOptions,
+	};
+
+	switch (options.version) {
+		case "complex-please-never-be-needed":
+			throw new Error(`Provided version is not supported at this moment: '${options.version}}'.`);
+		case REACT_UPDATE_VERSIONS.NATIVE_SETTER:
+			throw new Error(`Provided version is not supported at this moment: '${options.version}}'.`);
+		case REACT_UPDATE_VERSIONS.DOUBLE_DEFAULT:
+			throw new Error(`Provided version is not supported at this moment: '${options.version}}'.`);
+		default:
+			checkbox.checked = checked;
+			checkbox.dispatchEvent(new Event("change", { bubbles: true }));
 			break;
 	}
 }
