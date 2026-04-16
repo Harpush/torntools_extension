@@ -54,7 +54,7 @@ export abstract class Feature {
 }
 
 export abstract class DisabledUntilNoticeFeature extends Feature {
-	requirements() {
+	requirements(): (boolean | string) | Promise<boolean | string> {
 		return "Disabled until further notice.";
 	}
 }
