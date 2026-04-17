@@ -1118,13 +1118,10 @@ async function setupPreferences(requireCleanup: boolean = false) {
 		});
 		settings.alliedFactions = findAllElements<HTMLInputElement>("#allyFactions input")
 			.map((input) => {
-				if (Number.isNaN(parseInt(input.value))) return input.value.trim();
+				if (input.value.match(/^\d+$/) && Number.isNaN(parseInt(input.value))) return input.value.trim();
 				else return parseInt(input.value.trim());
 			})
-			.filter((x) => {
-				if (typeof x === "string") return x.trim() !== "";
-				else return x;
-			});
+			.filter((x) => typeof x !== "string" || !!x);
 		settings.userAlias = {};
 		for (const aliasRow of findAllElements<HTMLInputElement>("#userAlias > li", _preferences)) {
 			if (aliasRow.querySelector<HTMLInputElement>(".userID").value) {

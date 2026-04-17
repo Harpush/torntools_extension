@@ -41,7 +41,8 @@
 				{ "message": "Fix performance issues with 'FFScouter Gauge'.", "contributor": "DeKleineKobini" },
 				{ "message": "Fix styling issues with 'Stocks Money Input' on mobile devices.", "contributor": "DeKleineKobini" },
 				{ "message": "Fix 'Stocks Money Input' disappearing after buying or selling a stock.", "contributor": "DeKleineKobini" },
-				{ "message": "Fix 'Gym Progress' styling issues on mobile.", "contributor": "DeKleineKobini" }
+				{ "message": "Fix 'Gym Progress' styling issues on mobile.", "contributor": "DeKleineKobini" },
+				{ "message": "Fix 'Ally Faction' options not properly saving faction names if they begin with a number.", "contributor": "DeKleineKobini" }
 			],
 			"changes": [
 				{ "message": "Replace all FontAwesome icons with others, mainly from Phosphor Icons.", "contributor": "DeKleineKobini" },
