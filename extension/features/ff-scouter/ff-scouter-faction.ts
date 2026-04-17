@@ -119,8 +119,8 @@ export default class FFScouterFactionFeature extends Feature {
 		return settings.scripts.ffScouter.factionList;
 	}
 
-	async initialise() {
-		SCOUTER_SERVICE = await scouterService();
+	initialise() {
+		SCOUTER_SERVICE = scouterService();
 		initialise();
 	}
 

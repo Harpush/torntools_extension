@@ -142,23 +142,9 @@ class FFScouterService extends ScouterService {
 
 const FF_SCOUTER_SERVICE = new FFScouterService();
 
-export async function scouterService() {
+export function scouterService() {
 	const { ffScouter: useFFScouter } = settings.external;
-	if (!useFFScouter) {
-		return null;
-	}
-	await new Promise<void>((resolve) => {
-		const ffScouterServiceIntervalID = setInterval(() => {
-			if (!useFFScouter || !hasAPIData()) {
-				clearInterval(ffScouterServiceIntervalID);
-				resolve();
-				return;
-			} else if (typeof FF_SCOUTER_SERVICE === "undefined") return;
-
-			clearInterval(ffScouterServiceIntervalID);
-			resolve();
-		});
-	});
+	if (!useFFScouter) return null;
 
 	const services = [{ name: "ffscouter", service: FF_SCOUTER_SERVICE, check: useFFScouter && hasAPIData() }].filter((s) => s.check);
 

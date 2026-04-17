@@ -57,8 +57,8 @@ export default class FFScouterAttackFeature extends Feature {
 		return settings.scripts.ffScouter.attack;
 	}
 
-	async initialise() {
-		SCOUTER_SERVICE = await scouterService();
+	initialise() {
+		SCOUTER_SERVICE = scouterService();
 	}
 
 	async execute() {

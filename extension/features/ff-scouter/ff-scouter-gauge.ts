@@ -273,8 +273,8 @@ export default class FFScouterGaugeFeature extends Feature {
 		return settings.scripts.ffScouter.gauge;
 	}
 
-	async initialise() {
-		SCOUTER_SERVICE = await scouterService();
+	initialise() {
+		SCOUTER_SERVICE = scouterService();
 		BLUE_ARROW = browser.runtime.getURL("/images/svg-icons/blue-arrow.svg");
 		GREEN_ARROW = browser.runtime.getURL("/images/svg-icons/green-arrow.svg");
 		RED_ARROW = browser.runtime.getURL("/images/svg-icons/red-arrow.svg");

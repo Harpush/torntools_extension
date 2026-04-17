@@ -8,8 +8,7 @@ import { requireElement } from "@/utils/common/functions/requires";
 
 let SCOUTER_SERVICE: ScouterService;
 
-async function initialiseMiniProfile() {
-	SCOUTER_SERVICE = await scouterService();
+function initialiseMiniProfile() {
 	addFetchListener((event) => {
 		if (!FEATURE_MANAGER.isEnabled(FFScouterMiniProfileFeature)) return;
 
@@ -71,7 +70,8 @@ export default class FFScouterMiniProfileFeature extends Feature {
 	}
 
 	async initialise() {
-		await initialiseMiniProfile();
+		SCOUTER_SERVICE = scouterService();
+		initialiseMiniProfile();
 	}
 
 	storageKeys(): string[] {

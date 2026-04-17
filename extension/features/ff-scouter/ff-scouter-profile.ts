@@ -68,8 +68,8 @@ export default class FfScouterProfileFeature extends Feature {
 		return settings.scripts.ffScouter.profile;
 	}
 
-	async initialise() {
-		SCOUTER_SERVICE = await scouterService();
+	initialise() {
+		SCOUTER_SERVICE = scouterService();
 	}
 
 	async execute() {
