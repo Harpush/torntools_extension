@@ -33,6 +33,13 @@ export const MIGRATIONS: MigrationScript[] = [
 			database.cache["personal-stats"] = {};
 		},
 	},
+	{
+		id: "b194a6d5-4230-4b03-8a8b-bebd7c431cc9",
+		version: "9.0.0",
+		execute(database, _flags, _oldStorage) {
+			database.settings.pages.api.autoDemo = false;
+		},
+	},
 ];
 
 export async function executeMigrationScripts(storage: Database, oldStorage: any) {

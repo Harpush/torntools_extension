@@ -31,6 +31,7 @@ function onInitialisation() {
 }
 
 async function onInstall() {
+	console.log("DKK on install");
 	await migrateDatabase(true);
 	initializeDatabase();
 	void checkUpdate();
@@ -62,6 +63,7 @@ async function checkUpdate() {
 }
 
 async function onStartup() {
+	console.log("DKK on startup");
 	await migrateDatabase(false);
 	initializeDatabase();
 	void checkUpdate();

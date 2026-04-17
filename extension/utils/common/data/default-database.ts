@@ -333,7 +333,7 @@ export const DEFAULT_STORAGE = {
 			},
 			api: {
 				autoFillKey: new DefaultSetting("boolean", true),
-				autoDemo: new DefaultSetting("boolean", true),
+				autoDemo: new DefaultSetting("boolean", false),
 				autoPretty: new DefaultSetting("boolean", true),
 				clickableSelections: new DefaultSetting("boolean", true),
 			},
